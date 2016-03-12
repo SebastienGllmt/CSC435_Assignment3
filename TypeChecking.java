@@ -36,7 +36,7 @@ public class TypeChecking {
 			// of int provided for destTyp
 			return ((Type.UntypedNumber)srcTyp).isInteger();
 		}
-	
+
 		// handle initialization of an array or slice
 		// Note: this code should be expanded to also handle the destination
 		// being a TypeList too ... that's needed for multiple assignment as in
@@ -81,7 +81,7 @@ public class TypeChecking {
 		assert restyp[0] != null;
 		return restyp[0];
 	}
- 
+
  	// This function tests if two types have the same underlying types
  	// as explained in the Go specification:
  	//    https://golang.org/ref/spec#Types
@@ -111,7 +111,7 @@ public class TypeChecking {
  		// does that cover all the cases?
  		return false;
  	}
- 	
+
  	// This tests for Type Identity as described in the Go specification:
  	//    https://golang.org/ref/spec#Type_identity
  	public static boolean identicalTypes( Type a, Type b ) {
@@ -142,7 +142,7 @@ public class TypeChecking {
  		}
  		if (a instanceof Type.Struct) {
  			Type.Struct aa = (Type.Struct)a;
- 			Type.Struct bb = (Type.Struct)b;	
+ 			Type.Struct bb = (Type.Struct)b;
  			LinkedHashMap<String, Symbol> af = aa.getFields();
  			LinkedHashMap<String, Symbol> bf = bb.getFields();
  			if (af.size() != bf.size())
@@ -185,6 +185,12 @@ public class TypeChecking {
  	// return the type of the result
     public static Type checkBinOp(Type lhs, Type rhs, String op, ParserRuleContext ctx) {
     	// very much code is missing here!
+
+      // relOp:     '==' | '!=' | '<' | '<=' | '>' | '>=' ;
+      // addOp:     '+' | '-' | '|' | '^' ;
+      // mulOp:     '*' | '/' | '%' | '<<' | '>>' | '&' | '&^' ;
+
+
     	return Type.unknownType;
     }
 
@@ -192,6 +198,9 @@ public class TypeChecking {
  	// return the type of the result
     public static Type checkUnaryOp(Type opnd, String op, ParserRuleContext ctx) {
     	// very much code is missing here!
+    	// unaryOp:   '+' | '-' | '!' | '^' | '*' | '&' ;
+
+
     	return Type.unknownType;
     }
 
