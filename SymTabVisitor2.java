@@ -14,7 +14,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	LinkedList<Type> currentSignatureResult = new LinkedList<Type>();
 	int arraySize = 0;
 	boolean dumpSymTab = false;
-	
+
 	// ************** constructors ******************
 
 	// constructor
@@ -99,14 +99,14 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
     }
 
 	// *************** Visit methods *******************
-	
-	/* Note: 
+
+	/* Note:
 		Tthese visit methods are in exactly the same order as
 	   	the corresponding grammar rules in Goo.g4.
 	   	If a visitor method is not needed for a group of rules with
 	    the same LHS, a comment listing the rule(s) appears instead.
 	   	This helps ensure that no rule has been missed.
-	*/ 
+	*/
 
 	@Override
 	public Type visitType(GooParser.TypeContext ctx) {
@@ -182,7 +182,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	}
 
 	// fieldDeclList:  /* empty */ |  (fieldDecl ';')* fieldDecl optSemi ;
-	
+
     @Override
 	public Type visitFieldDecl(GooParser.FieldDeclContext ctx) {
 		List<Token> ids = ctx.identifierList().idl;
@@ -208,7 +208,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	}
 
 	// baseType:   type ;
-	
+
     @Override
 	public Type visitSignature(GooParser.SignatureContext ctx) {
 		Type typ = lookupType(ctx);
@@ -284,7 +284,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 		List<Token> ids = ctx.identifierList().idl;
 		GooParser.ConstSpecRemContext csrx = ctx.constSpecRem();
 		Type typ = Type.unknownType;  // use this if type is missing
-		if (csrx != null)
+		if (csrx != null && csrx.type() != null)
 			typ = visit(csrx.type());
 		return matchNamesToTypes(typ, ids, Symbol.Kind.Constant);
 	}
@@ -447,7 +447,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 		if (pkg != null && pkg.getKind() == Symbol.Kind.Package) {
 			Symbol member = ((Packages.PackageSymbol)pkg).getMember(memberName);
 			if (member != null)
-				return associateType(ctx,member.getType()); 
+				return associateType(ctx,member.getType());
 			ReportError.error(ctx, pkgName + "." + memberName + " not found");
 		} else
 			ReportError.error(ctx, "package " + pkgName + " not found");
@@ -602,6 +602,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	public Type visitNumExp(GooParser.NumExpContext ctx) {
 		Type lhs = visit(ctx.expression(0));
 		Type rhs = visit(ctx.expression(1));
+    ReportError.error(ctx, lhs.getName() + "_werwer_"+ rhs.getName());
 		if (ctx.mulOp() != null)
 			return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.mulOp().getText(), ctx));
 		return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.addOp().getText(), ctx));
@@ -613,7 +614,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 		Type rhs = visit(ctx.expression(1));
 		return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.relOp().getText(), ctx));
 	}
-	
+
 	@Override
 	public Type visitBoolExp(GooParser.BoolExpContext ctx) {
 		Type lhs = visit(ctx.expression(0));
@@ -773,7 +774,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	}
 
 	// packageClause:   PACKAGE packageName ;
-	
+
 	// packageName:   Identifier ;
 
 	// importDeclList:   (importDecl ';')*  ;
@@ -808,7 +809,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 				if (typeList != null)
 					theType = typeList[k++];
 				else
-					theType = typ;				
+					theType = typ;
 				updateOrDefine(tt, kind, theType);
 		    }
 		}
@@ -816,7 +817,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	}
 
 	// scans up enclosing scopes to find current function
-	// CRASHES IF CALLED WHEN CURRENT SCOPE IS PACKAGE LEVEL !! 
+	// CRASHES IF CALLED WHEN CURRENT SCOPE IS PACKAGE LEVEL !!
 	private FunctionSymbol currentFunction() {
 		Scope scope = currentScope;
 		while( !(scope instanceof FunctionSymbol) )
