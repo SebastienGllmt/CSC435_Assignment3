@@ -3,6 +3,7 @@
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
 import java.util.*;
 
 public class SymTabVisitor2 extends GooBaseVisitor<Type> {
@@ -570,7 +571,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 
 	@Override
 	public Type visitIndex(GooParser.IndexContext ctx) {
-	    Type ixtyp = visit(ctx.expression());
+	  Type ixtyp = visit(ctx.expression());
 		TypeChecking.checkAssignability(Predefined.intType, ixtyp, ctx);	// index must be an int
 		return associateType(ctx,ixtyp);
 	}
@@ -602,7 +603,6 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	public Type visitNumExp(GooParser.NumExpContext ctx) {
 		Type lhs = visit(ctx.expression(0));
 		Type rhs = visit(ctx.expression(1));
-    ReportError.error(ctx, lhs.getName() + "_werwer_"+ rhs.getName());
 		if (ctx.mulOp() != null)
 			return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.mulOp().getText(), ctx));
 		return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.addOp().getText(), ctx));
@@ -628,6 +628,19 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	public Type visitUnaryExpr(GooParser.UnaryExprContext ctx) {
 		if (ctx.unaryOp() != null) {
 			Type opnd = visit(ctx.unaryExpr());
+			if(opnd instanceof Type.UntypedNumber){
+			  switch(ctx.unaryOp().getText()){
+			  case "-":
+			    opnd = Type.newUntypedNumber("-"+ctx.unaryExpr().getText());
+			    break;
+			  case "^":
+			    Type.UntypedNumber num = (Type.UntypedNumber)opnd;
+			    if(num.isInteger()){
+			      opnd = Type.newUntypedNumber(Long.toString(~num.getIntValue()));
+			    }
+			    break;
+			  }
+			}
 			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx));
 		}
 		return associateType(ctx,visit(ctx.primaryExpr()));
