@@ -628,7 +628,6 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	public Type visitUnaryExpr(GooParser.UnaryExprContext ctx) {
 		if (ctx.unaryOp() != null) {
 			Type opnd = visit(ctx.unaryExpr());
-			System.out.println("ADSF - " + opnd.toString());
 			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx));
 		}
 		return associateType(ctx,visit(ctx.primaryExpr()));
