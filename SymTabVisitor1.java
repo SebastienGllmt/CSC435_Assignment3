@@ -18,7 +18,7 @@ public class SymTabVisitor1 extends GooBaseVisitor<Type> {
 	LinkedList<Type> currentSignatureResult = new LinkedList<Type>();
 	boolean dumpSymTab = false;
 	boolean dumpPredefineds = false;
-	
+
 	// constructor
 	//  t is the -dtsy command line flag
 	//  d is the -dsym command line flag
@@ -58,7 +58,7 @@ public class SymTabVisitor1 extends GooBaseVisitor<Type> {
 	}
 
     // utility functions
-    
+
     static public String normalizeString( String raw, ParserRuleContext ctx ) {
         StringBuilder sb = new StringBuilder();
         if (raw.charAt(0) == '\"') {
@@ -90,7 +90,7 @@ public class SymTabVisitor1 extends GooBaseVisitor<Type> {
         }
         return sb.toString();
     }
-    
+
     static public int unhex( char c ) {
         if (c>='0' && c<='9') return c-'0';
         if (c>='a' && c<='f') return c-'a'+10;
@@ -206,7 +206,7 @@ public class SymTabVisitor1 extends GooBaseVisitor<Type> {
 		List<Token> ids = ctx.identifierList().idl;
 		GooParser.ConstSpecRemContext csrx = ctx.constSpecRem();
 		Type typ = Type.unknownType;  // use this if type is missing
-		if (csrx != null)
+		if (csrx != null && csrx.type() != null)
 			typ = visit(csrx.type());
 		for( Token t : ids ) {
 			String name = t.getText();

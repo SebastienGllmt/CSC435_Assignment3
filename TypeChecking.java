@@ -188,34 +188,22 @@ public class TypeChecking {
       // rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
       // add_op     = "+" | "-" | "|" | "^" .
       // mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
+      // boolean lhsUntypedNumber = (Type.unTypNumCache.get(lhs.toString()) == null);
+      // boolean rhsUntypedNumber = (Type.unTypNumCache.get(rhs.toString()) == null);
 
 
-      // +    sum                    integers, floats, complex values, strings
-      // -    difference             integers, floats, complex values
-      // *    product                integers, floats, complex values
-      // /    quotient               integers, floats, complex values
-      // %    remainder              integers
-      //
-      // &    bitwise AND            integers
-      // |    bitwise OR             integers
-      // ^    bitwise XOR            integers
-      // &^   bit clear (AND NOT)    integers
-      //
-      // <<   left shift             integer << unsigned integer
-      // >>   right shift            integer >> unsigned integer
 
-
-      boolean lhsuntyped = Type.unTypNumCache.get(lhs.toString()) == null;
-      boolean rhsuntyped = Type.unTypNumCache.get(lhs.toString()) == null;
-      Re
-
-
-      if (lhs.isNamedType() || rhs.isNamedType()) {
-        if(!identicalTypes(lhs, rhs)) {
-          ReportError.error(ctx, "Named types do not match.");
-        }
+      // Named types must match (strict type checking)
+      if (lhs.isNamedType() && rhs.isNamedType()) {
+        ReportError.error(ctx, lhs.getName() + "__" + op + "??__"+ rhs.getName());
       }
+      // if (!identicalTypes(lhs, rhs)) {
+        // ReportError.error(ctx, "Named types do not match.000000");
+      //   }
+      // }
 
+      //
+      // if (lhs.isNamedType())
 
       // if types are NAMED, the name must be the same
       switch(op) {
@@ -245,6 +233,21 @@ public class TypeChecking {
 
         case ">=":
         break;
+
+
+        // +    sum                    integers, floats, complex values, strings
+        // -    difference             integers, floats, complex values
+        // *    product                integers, floats, complex values
+        // /    quotient               integers, floats, complex values
+        // %    remainder              integers
+        //
+        // &    bitwise AND            integers
+        // |    bitwise OR             integers
+        // ^    bitwise XOR            integers
+        // &^   bit clear (AND NOT)    integers
+        //
+        // <<   left shift             integer << unsigned integer
+        // >>   right shift            integer >> unsigned integer
 
 
         // Addition Operators "+" | "-" | "|" | "^" .
@@ -286,7 +289,6 @@ public class TypeChecking {
       // ReportError.error(ctx, "too many argumentswerwerwer in function call");
       // ReportError.error(ctx, lhs.toString());
       // assert false;
-      ReportError.error(ctx, op);
     	return Type.unknownType;
     }
 
