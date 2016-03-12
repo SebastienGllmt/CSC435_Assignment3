@@ -543,11 +543,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 			visit(ctx.slice());
 			if (typ instanceof Type.Slice)
 				return associateType(ctx,typ);
-			// NOT HANDLED -- taking a slice of an array or a string or
-			// a pointer to an array; see
-			//   https://golang.org/ref/spec#Slice_expressions
-			if (typ != Type.unknownType)
-			    ReportError.error(ctx, "slice/array/string type required");
+			return associateType(ctx,lookupType(ctx.primaryExpr()));
 		}
 		if (ctx.arguments() != null) {
 			// it parses as a function call
@@ -631,6 +627,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	public Type visitUnaryExpr(GooParser.UnaryExprContext ctx) {
 		if (ctx.unaryOp() != null) {
 			Type opnd = visit(ctx.unaryExpr());
+			System.out.println("ADSF - " + opnd.toString());
 			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx));
 		}
 		return associateType(ctx,visit(ctx.primaryExpr()));
