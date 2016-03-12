@@ -1,0 +1,27 @@
+Corrections and Help for Assignment3
+====================================
+
+Correction to Type.java
+    The constructor for the new class Type.UntypedNumber was missing
+    a call to the private method checkForm().
+    You should either download the corrected copy of Type.java or
+    insert the line
+          checkForm();
+    as the very last statement in the class constructo.
+
+Help with learning the Go type system:
+    The Go language provides a way to discover what type is being used by
+    the compiler for a variable.
+
+    For example, what is the type of x here? You can paste this code into
+    the code window of https://golang.org/# and click Run. The %T format
+    displays the name of the type.
+
+		package main
+		import "fmt"
+
+		var x = 5.1 * 10
+		
+		func main() {
+			fmt.Printf("%T\n", x)
+		}
