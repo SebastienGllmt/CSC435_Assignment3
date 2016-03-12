@@ -184,13 +184,109 @@ public class TypeChecking {
  	// Report an error if the operator is not applicable to the operand types;
  	// return the type of the result
     public static Type checkBinOp(Type lhs, Type rhs, String op, ParserRuleContext ctx) {
-    	// very much code is missing here!
+      // binary_op  = "||" | "&&" | rel_op | add_op | mul_op .
+      // rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
+      // add_op     = "+" | "-" | "|" | "^" .
+      // mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
 
-      // relOp:     '==' | '!=' | '<' | '<=' | '>' | '>=' ;
-      // addOp:     '+' | '-' | '|' | '^' ;
-      // mulOp:     '*' | '/' | '%' | '<<' | '>>' | '&' | '&^' ;
+
+      // +    sum                    integers, floats, complex values, strings
+      // -    difference             integers, floats, complex values
+      // *    product                integers, floats, complex values
+      // /    quotient               integers, floats, complex values
+      // %    remainder              integers
+      //
+      // &    bitwise AND            integers
+      // |    bitwise OR             integers
+      // ^    bitwise XOR            integers
+      // &^   bit clear (AND NOT)    integers
+      //
+      // <<   left shift             integer << unsigned integer
+      // >>   right shift            integer >> unsigned integer
 
 
+      boolean lhsuntyped = Type.unTypNumCache.get(lhs.toString()) == null;
+      boolean rhsuntyped = Type.unTypNumCache.get(lhs.toString()) == null;
+      Re
+
+
+      if (lhs.isNamedType() || rhs.isNamedType()) {
+        if(!identicalTypes(lhs, rhs)) {
+          ReportError.error(ctx, "Named types do not match.");
+        }
+      }
+
+
+      // if types are NAMED, the name must be the same
+      switch(op) {
+        // Or
+        case "||":
+        break;
+
+        // And
+        case "&&":
+        break;
+
+        // Relational Operators "==" | "!=" | "<" | "<=" | ">" | ">=" .
+        case "==":
+        break;
+
+        case "!=":
+        break;
+
+        case "<":
+        break;
+
+        case "<=":
+        break;
+
+        case ">":
+        break;
+
+        case ">=":
+        break;
+
+
+        // Addition Operators "+" | "-" | "|" | "^" .
+        case "+":
+        break;
+
+        case "-":
+        break;
+
+        case "|":
+        break;
+
+        case "^":
+        break;
+
+        //  Muliplicative operators "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
+        case "*":
+        break;
+
+        case "/":
+        break;
+
+        case "%":
+        break;
+
+        case "<<":
+        break;
+
+        case ">>":
+        break;
+
+        case "&":
+        break;
+
+        case "&^":
+        break;
+      }
+
+      // ReportError.error(ctx, "too many argumentswerwerwer in function call");
+      // ReportError.error(ctx, lhs.toString());
+      // assert false;
+      ReportError.error(ctx, op);
     	return Type.unknownType;
     }
 
@@ -200,8 +296,15 @@ public class TypeChecking {
     	// very much code is missing here!
     	// unaryOp:   '+' | '-' | '!' | '^' | '*' | '&' ;
 
-
+      // ReportError.error(ctx, op);
     	return Type.unknownType;
     }
 
 }
+
+// binary_op  = "||" | "&&" | rel_op | add_op | mul_op .
+// rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
+// add_op     = "+" | "-" | "|" | "^" .
+// mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
+//
+// unary_op   = "+" | "-" | "!" | "^" | "*" | "&" | "<-" .
