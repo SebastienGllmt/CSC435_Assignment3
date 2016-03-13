@@ -79,7 +79,7 @@ public class Type implements Cloneable {
 
 	@Override
     public String toString() { return name; }
-	
+
 	// convenience method for creating int, uint and float types
 	public static Type newNumericType(char w, int size) {
 		Type result = null;
@@ -109,7 +109,7 @@ public class Type implements Cloneable {
 	public static Type.Array newArrayType(Type elemType) {
 		return unknownType.new Array(elemType);
 	}
- 
+
  	public static Type.Slice newSliceType(Type elemType) {
 		return unknownType.new Slice(elemType);
 	}
@@ -158,13 +158,13 @@ public class Type implements Cloneable {
 
     public class Int extends Type {
         private int size;
-        
+
         public Int( int size ) {
             this.size = size;
             name = "int"+size;
             setComplete(true);
         }
-        
+
         public int getSize() { return size; }
 
         @Override
@@ -175,7 +175,7 @@ public class Type implements Cloneable {
 
     public class Uint extends Type {
         private int size;
-        
+
         public Uint( int size ) {
             this.size = size;
             name = "uint"+size;
@@ -195,13 +195,17 @@ public class Type implements Cloneable {
 		private long iValue;
 		private double dValue;
 		private boolean isInt;
-		
+        private boolean isPossibleDouble; // If original text was an int or was actually a double
+
 		public UntypedNumber( String num ) {
 			text = num;  name = "("+num+")";
 			checkForm();
 		}
 
 		public boolean isInteger() { return isInt; }
+
+        // Was the incoming text "2.0" or "2"
+        public boolean isPossibleDouble() { return isPossibleDouble; }
 
 		public long getIntValue() {
 			assert isInt; return iValue;
@@ -217,9 +221,12 @@ public class Type implements Cloneable {
 				dval = new Double(text);
 				iValue = dval.longValue();
 				isInt = (iValue*1.0 == dval);
+                isPossibleDouble = text.contains(".");
+                if (!isInt) dValue = dval;
 			} catch(NumberFormatException e) {
 				ReportError.error("bad number: "+text);
 				iValue = 0;
+				text = "0";
 				isInt = true;
 			}
 		}
@@ -232,13 +239,13 @@ public class Type implements Cloneable {
 
     public class Flt extends Type {
         private int size;
-        
+
         public Flt( int size ) {
             this.size = size;
             name = "float"+size;
             setComplete(true);
         }
-        
+
         public int getSize() { return size; }
 
         @Override
@@ -251,7 +258,7 @@ public class Type implements Cloneable {
         private Type elementType;
         private int size;
     	boolean recursionStop = false; // prevent infinite loops in toString()
-        
+
         public Array( Type elementType ) {
             this.elementType = elementType;
             name = "[..]"; size = -1;
@@ -284,16 +291,16 @@ public class Type implements Cloneable {
     public class Slice extends Type {
         private Type elementType;
     	boolean recursionStop = false; // prevent infinite loops in toString()
-        
+
         public Slice( Type elementType ) {
             this.elementType = elementType;
             name = "[]";
             setComplete(elementType.isComplete());
         }
-        
+
         public Type getElementType() { return elementType; }
         public void setElementType(Type et) { elementType = et; }
-        
+
         @Override
         public String toString() {
         	if (recursionStop) return getName();
@@ -312,16 +319,16 @@ public class Type implements Cloneable {
     public class Pointer extends Type {
         private Type baseType;
     	boolean recursionStop = false; // prevent infinite loops in toString()
-        
+
         public Pointer( Type baseType ) {
             this.baseType = baseType;
             name = "*";
             setComplete(baseType.isComplete());
         }
-        
+
         public Type getBaseType() { return baseType; }
         public void setBaseType(Type bt) { baseType = bt; }
-        
+
         @Override
         public String toString() {
         	if (recursionStop) return getName();
@@ -342,12 +349,12 @@ public class Type implements Cloneable {
 	// E.g., the types of the arguments passed in a function call.
 	public class TypeList extends Type {
 		private Type[] types;
-		
+
 		public TypeList( LinkedList<Type> types ) {
 			this.types = types.toArray(new Type[0]);
 			setComplete();
 		}
-	
+
 		public TypeList( Type[] types ) {
 			this.types = (Type[])types.clone();
 			setComplete();
@@ -405,7 +412,7 @@ public class Type implements Cloneable {
 		public void setParameters(LinkedList<Type> pt) {
 			parameters = pt.toArray(new Type[0]);
 		}
-		
+
 		public Type[] getResults() { return results; }
 
 		public void setResults(LinkedList<Type> rt) {

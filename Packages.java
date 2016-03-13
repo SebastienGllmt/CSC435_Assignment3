@@ -52,11 +52,11 @@ public class Packages {
 			String nm = s.getName();
 			members.put(nm,s);
 		}
-		
+
 		public Symbol getMember( String name ) {
 			return members.get(name);
 		}
-		
+
 		@Override
 		public String toString() {
 			return "package "+name+" {"+members.keySet()+"}";

@@ -103,7 +103,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	// *************** Visit methods *******************
 
 	/* Note:
-		Tthese visit methods are in exactly the same order as
+		  these visit methods are in exactly the same order as
 	   	the corresponding grammar rules in Goo.g4.
 	   	If a visitor method is not needed for a group of rules with
 	    the same LHS, a comment listing the rule(s) appears instead.
@@ -286,8 +286,12 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 		List<Token> ids = ctx.identifierList().idl;
 		GooParser.ConstSpecRemContext csrx = ctx.constSpecRem();
 		Type typ = Type.unknownType;  // use this if type is missing
-		if (csrx != null)
+    if (csrx != null && csrx.type() != null) {
 			typ = visit(csrx.type());
+		} else {
+			typ = visit(ctx.constSpecRem());
+		}
+
 		return matchNamesToTypes(typ, ids, Symbol.Kind.Constant);
 	}
 
@@ -492,10 +496,16 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 
 	@Override
 	public Type visitPrimaryExpr(GooParser.PrimaryExprContext ctx) {
-		if (ctx.operand() != null)
-			return associateType(ctx,visit(ctx.operand()));
+    // ReportError.error(ctx, "asdfsfdsdf");
+		if (ctx.operand() != null) {
+      Type t = visit(ctx.operand());
+      // ReportError.error(ctx, t.toString());
+			return associateType(ctx,t);
+    }
+
 		if (ctx.conversion() != null)
 			return associateType(ctx,visit(ctx.conversion()));
+
 		Type typ = visit(ctx.primaryExpr());
 		if (ctx.selector() != null) {
 			// it parses as selecting a field from a struct or a
@@ -507,6 +517,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 					return associateType(ctx,s.getType());
 				ReportError.error(ctx, "field "+fieldName+" not found");
 			} else if (typ instanceof Type.Pointer) {
+
 			    Type.Pointer ptyp = (Type.Pointer)typ;
 			    if (ptyp.getBaseType() instanceof Type.Struct) {
 			        Type.Struct styp = (Type.Struct)ptyp.getBaseType();
@@ -565,6 +576,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 			if (typ != Type.unknownType)
 			    ReportError.error(ctx, "arguments can be passed only to a function");
 		}
+
 		return Type.unknownType;
 	}
 
@@ -599,6 +611,10 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	}
 
 	// expression:   unaryExpr # UnExp ;
+  @Override
+   public Type visitUnExp(GooParser.UnExpContext ctx) {
+     return associateType(ctx, visit(ctx.unaryExpr()));
+   }
 
 	public long Calculate(BiFunction<Long, Long, Long> op, long op1, long op2)
 	{

@@ -1,7 +1,16 @@
 package main
+
 import "fmt"
-const foo = 3
+
 
 func main() {
-  fmt.Println(3 + foo)
+  var arr[2*3*5*10] int32;
+  var foo[2*3*5*10] int32;
+  foo[30] = 90;
+  arr[0] = 20;
+  arr[0] += 20;
+  arr[0] += foo[30];
+  arr[0] = arr[1] - 20;
+
+	fmt.Println(arr); //, p, v2, v3)
 }
