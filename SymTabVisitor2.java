@@ -657,12 +657,12 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
           val = Calculate((x,y) -> x%y, left.isInteger() ? left.getIntValue() : left.getDoubleValue(), right.isInteger() ? right.getIntValue() : right.getDoubleValue());
           break;
         case "<<":
-          if(left.isInteger() && right.isInteger()){
+          if(left.isInteger() && right.isInteger() && right.getIntValue() >= 0){
             val = Calculate((Long x,Long y) -> x<<y, left.getIntValue(), right.getIntValue());
           }
           break;
         case ">>":
-          if(left.isInteger() && right.isInteger()){
+          if(left.isInteger() && right.isInteger() && right.getIntValue() >= 0){
             val = Calculate((Long x,Long y) -> x>>y, left.getIntValue(), right.getIntValue());
           }
           break;
