@@ -286,7 +286,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 		List<Token> ids = ctx.identifierList().idl;
 		GooParser.ConstSpecRemContext csrx = ctx.constSpecRem();
 		Type typ = Type.unknownType;  // use this if type is missing
-		if (csrx != null && csrx.type() != null)
+		if (csrx != null)
 			typ = visit(csrx.type());
 		return matchNamesToTypes(typ, ids, Symbol.Kind.Constant);
 	}
@@ -616,7 +616,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
   {
     return op.apply(op1, op2);
   }
-	
+
 	@Override
 	public Type visitNumExp(GooParser.NumExpContext ctx) {
 		Type lhs = visit(ctx.expression(0));

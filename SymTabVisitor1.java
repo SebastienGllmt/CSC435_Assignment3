@@ -129,7 +129,8 @@ public class SymTabVisitor1 extends GooBaseVisitor<Type> {
 			ReportError.error(ctx, name+" is not a type");
 			return Type.unknownType;
 		}
-		return saveType(ctx,sy.getType());
+		Type t = saveType(ctx,sy.getType());
+    return t;
     }
 
     @Override
