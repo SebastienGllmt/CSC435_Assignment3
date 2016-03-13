@@ -3,7 +3,9 @@
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
+
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	ParseTreeProperty<Scope> scopes;
@@ -570,7 +572,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 
 	@Override
 	public Type visitIndex(GooParser.IndexContext ctx) {
-	    Type ixtyp = visit(ctx.expression());
+	  Type ixtyp = visit(ctx.expression());
 		TypeChecking.checkAssignability(Predefined.intType, ixtyp, ctx);	// index must be an int
 		return associateType(ctx,ixtyp);
 	}
@@ -598,10 +600,89 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 
 	// expression:   unaryExpr # UnExp ;
 
+	public long Calculate(BiFunction<Long, Long, Long> op, long op1, long op2)
+	{
+	  return op.apply(op1, op2);
+	}
+	public double Calculate(BiFunction<Double, Long, Double> op, double op1, long op2)
+  {
+    return op.apply(op1, op2);
+  }
+	public double Calculate(BiFunction<Long, Double, Double> op, long op1, double op2)
+  {
+    return op.apply(op1, op2);
+  }
+	public double Calculate(BiFunction<Double, Double, Double> op, double op1, double op2)
+  {
+    return op.apply(op1, op2);
+  }
+
 	@Override
 	public Type visitNumExp(GooParser.NumExpContext ctx) {
 		Type lhs = visit(ctx.expression(0));
 		Type rhs = visit(ctx.expression(1));
+		if((lhs instanceof Type.UntypedNumber) && (rhs instanceof Type.UntypedNumber)){
+		  Type.UntypedNumber left = (Type.UntypedNumber)lhs;
+		  Type.UntypedNumber right = (Type.UntypedNumber)rhs;
+		  Number val = null;
+		  if(ctx.addOp() != null){
+		    switch(ctx.addOp().getText()){
+		    case "+":
+		      val = Calculate((x,y) -> x+y, left.isInteger() ? left.getIntValue() : left.getDoubleValue(), right.isInteger() ? right.getIntValue() : right.getDoubleValue());
+		      break;
+		    case "-":
+          val = Calculate((x,y) -> x-y, left.isInteger() ? left.getIntValue() : left.getDoubleValue(), right.isInteger() ? right.getIntValue() : right.getDoubleValue());
+          break;
+		    case "|":
+		      if(left.isInteger() && right.isInteger()){
+		        val = Calculate((Long x,Long y) -> x|y, left.getIntValue(), right.getIntValue());
+		      }
+		      break;
+		    case "^":
+		      if(left.isInteger() && right.isInteger()){
+            val = Calculate((Long x,Long y) -> x^y, left.getIntValue(), right.getIntValue());
+          }
+		      break;
+		    }
+		  }
+		  if(ctx.mulOp() != null){
+		    switch(ctx.mulOp().getText()){
+		    case "*":
+		      val = Calculate((x,y) -> x*y, left.isInteger() ? left.getIntValue() : left.getDoubleValue(), right.isInteger() ? right.getIntValue() : right.getDoubleValue());
+          break;
+        case "/":
+          val = Calculate((x,y) -> x/y, left.isInteger() ? left.getIntValue() : left.getDoubleValue(), right.isInteger() ? right.getIntValue() : right.getDoubleValue());
+          break;
+        case "%":
+          val = Calculate((x,y) -> x%y, left.isInteger() ? left.getIntValue() : left.getDoubleValue(), right.isInteger() ? right.getIntValue() : right.getDoubleValue());
+          break;
+        case "<<":
+          if(left.isInteger() && right.isInteger()){
+            val = Calculate((Long x,Long y) -> x<<y, left.getIntValue(), right.getIntValue());
+          }
+          break;
+        case ">>":
+          if(left.isInteger() && right.isInteger()){
+            val = Calculate((Long x,Long y) -> x>>y, left.getIntValue(), right.getIntValue());
+          }
+          break;
+        case "&":
+          if(left.isInteger() && right.isInteger()){
+            val = Calculate((Long x,Long y) -> x&y, left.getIntValue(), right.getIntValue());
+          }
+          break;
+        case "&^":
+          if(left.isInteger() && right.isInteger()){
+            val = Calculate((Long x,Long y) -> x&(~y), left.getIntValue(), right.getIntValue());
+          }
+          break;
+		    }
+		  }
+		  if(val != null){
+		    Type untyped = Type.newUntypedNumber(val.toString());
+		    return associateType(ctx, untyped);
+		  }
+		}
 		if (ctx.mulOp() != null)
 			return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.mulOp().getText(), ctx));
 		return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.addOp().getText(), ctx));
@@ -627,6 +708,23 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	public Type visitUnaryExpr(GooParser.UnaryExprContext ctx) {
 		if (ctx.unaryOp() != null) {
 			Type opnd = visit(ctx.unaryExpr());
+			if(opnd instanceof Type.UntypedNumber){
+			  Type newType = null;
+			  switch(ctx.unaryOp().getText()){
+			  case "-":
+			    newType = Type.newUntypedNumber("-"+ctx.unaryExpr().getText());
+			    break;
+			  case "^":
+			    Type.UntypedNumber num = (Type.UntypedNumber)opnd;
+			    if(num.isInteger()){
+			      newType = Type.newUntypedNumber(Long.toString(~num.getIntValue()));
+			    }
+			    break;
+			  }
+			  if(newType != null){
+			    return associateType(ctx, newType);
+			  }
+			}
 			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx));
 		}
 		return associateType(ctx,visit(ctx.primaryExpr()));
