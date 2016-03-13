@@ -284,7 +284,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 		List<Token> ids = ctx.identifierList().idl;
 		GooParser.ConstSpecRemContext csrx = ctx.constSpecRem();
 		Type typ = Type.unknownType;  // use this if type is missing
-		if (csrx != null && csrx.type() != null)
+		if (csrx != null)
 			typ = visit(csrx.type());
 		return matchNamesToTypes(typ, ids, Symbol.Kind.Constant);
 	}
@@ -543,11 +543,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 			visit(ctx.slice());
 			if (typ instanceof Type.Slice)
 				return associateType(ctx,typ);
-			// NOT HANDLED -- taking a slice of an array or a string or
-			// a pointer to an array; see
-			//   https://golang.org/ref/spec#Slice_expressions
-			if (typ != Type.unknownType)
-			    ReportError.error(ctx, "slice/array/string type required");
+			return associateType(ctx,lookupType(ctx.primaryExpr()));
 		}
 		if (ctx.arguments() != null) {
 			// it parses as a function call

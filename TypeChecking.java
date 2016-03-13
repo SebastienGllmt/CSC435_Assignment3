@@ -295,7 +295,8 @@ public class TypeChecking {
 
       // ReportError.error(ctx, lhs.toString());
       // assert false;
-    	return Type.unknownType;
+    	// return Type.unknownType;
+      return new Type.Int(32);
     }
 
  	// Report an error if the operator is not applicable to the operand type;
