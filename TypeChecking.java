@@ -188,22 +188,14 @@ public class TypeChecking {
       // rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
       // add_op     = "+" | "-" | "|" | "^" .
       // mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
-      // boolean lhsUntypedNumber = (Type.unTypNumCache.get(lhs.toString()) == null);
-      // boolean rhsUntypedNumber = (Type.unTypNumCache.get(rhs.toString()) == null);
-
-
 
       // Named types must match (strict type checking)
       if (lhs.isNamedType() && rhs.isNamedType()) {
-        ReportError.error(ctx, lhs.getName() + "__" + op + "??__"+ rhs.getName());
+         if (!identicalTypes(lhs, rhs)) {
+           ReportError.error(ctx, "Mismatch type: " + lhs.getName() + " " + op + " "+ rhs.getName());
+         }
       }
-      // if (!identicalTypes(lhs, rhs)) {
-        // ReportError.error(ctx, "Named types do not match.000000");
-      //   }
-      // }
 
-      //
-      // if (lhs.isNamedType())
 
       // if types are NAMED, the name must be the same
       switch(op) {
@@ -252,41 +244,55 @@ public class TypeChecking {
 
         // Addition Operators "+" | "-" | "|" | "^" .
         case "+":
+          System.out.println(rhs.isComplete());
+          if (!(lhs instanceof Type.UntypedNumber && rhs instanceof Type.UntypedNumber)) {
+            if (lhs.name != "string" || rhs.name != "string") {
+              ReportError.error(ctx, "Can only use " + op + " on numbers or strings.");
+            }
+          }
         break;
 
+        //
         case "-":
-        break;
-
-        case "|":
-        break;
-
-        case "^":
-        break;
-
-        //  Muliplicative operators "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
         case "*":
-        break;
-
         case "/":
+          if (!(lhs instanceof Type.UntypedNumber && rhs instanceof Type.UntypedNumber)) {
+            ReportError.error(ctx, "Can only use " + op + " on numbers.");
+          }
         break;
 
-        case "%":
-        break;
-
+        // Can only shift ints by uint
         case "<<":
-        break;
-
         case ">>":
+          if (rhs instanceof Type.Uint) {
+            if (!(lhs instanceof Type.UntypedNumber)) {
+                ReportError.error(ctx, "Can only bitshift integers.");
+            } else {
+              if (!((Type.UntypedNumber)lhs).isInteger()) {
+                ReportError.error(ctx, "Can only bitshift integers.");
+              }
+            }
+          } else {
+            ReportError.error(ctx, "Can only bitshift by unsigned ints.");
+          }
         break;
 
+        // Can only operate with left and right hand sides being integers
+        case "|":
+        case "%":
         case "&":
-        break;
-
         case "&^":
+        case "^":
+          if (lhs instanceof Type.UntypedNumber && rhs instanceof Type.UntypedNumber) {
+            if (!((Type.UntypedNumber)lhs).isInteger() || !((Type.UntypedNumber)rhs).isInteger()) {
+              ReportError.error(ctx, "Can use" + op + " on integers.");
+            }
+          } else {
+            ReportError.error(ctx, "Can use " + op + " on integers.");
+          }
         break;
       }
 
-      // ReportError.error(ctx, "too many argumentswerwerwer in function call");
       // ReportError.error(ctx, lhs.toString());
       // assert false;
     	return Type.unknownType;
@@ -308,5 +314,4 @@ public class TypeChecking {
 // rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
 // add_op     = "+" | "-" | "|" | "^" .
 // mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
-//
 // unary_op   = "+" | "-" | "!" | "^" | "*" | "&" | "<-" .

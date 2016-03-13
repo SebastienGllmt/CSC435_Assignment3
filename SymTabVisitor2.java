@@ -606,7 +606,6 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	public Type visitNumExp(GooParser.NumExpContext ctx) {
 		Type lhs = visit(ctx.expression(0));
 		Type rhs = visit(ctx.expression(1));
-    ReportError.error(ctx, lhs.getName() + "_werwer_"+ rhs.getName());
 		if (ctx.mulOp() != null)
 			return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.mulOp().getText(), ctx));
 		return associateType(ctx,TypeChecking.checkBinOp(lhs, rhs, ctx.addOp().getText(), ctx));
