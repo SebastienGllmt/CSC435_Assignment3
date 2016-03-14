@@ -497,11 +497,8 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	@Override
 	public Type visitPrimaryExpr(GooParser.PrimaryExprContext ctx) {
     // ReportError.error(ctx, "asdfsfdsdf");
-		if (ctx.operand() != null) {
-      Type t = visit(ctx.operand());
-      // ReportError.error(ctx, t.toString());
-			return associateType(ctx,t);
-    }
+    if (ctx.operand() != null)		    // ReportError.error(ctx, "asdfsfdsdf");
+			return associateType(ctx,visit(ctx.operand()));
 
 		if (ctx.conversion() != null)
 			return associateType(ctx,visit(ctx.conversion()));

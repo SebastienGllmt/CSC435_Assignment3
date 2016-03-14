@@ -1,16 +1,15 @@
 package main
 
-import "fmt"
-
-
 func main() {
-  var arr[2*3*5*10] int32;
-  var foo[2*3*5*10] int32;
-  foo[30] = 90;
-  arr[0] = 20;
-  arr[0] += 20;
-  arr[0] += foo[30];
-  arr[0] = arr[1] - 20;
 
-	fmt.Println(arr); //, p, v2, v3)
+  type Days int32
+  type Kilograms int32
+
+  var v1 Days
+  var v2 Kilograms
+  var x = v1;
+
+  v1 = v2 // type mismatch error
+  v1 = 3 // OK
+  v2 = 3 // OK
 }
