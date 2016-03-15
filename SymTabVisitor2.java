@@ -738,10 +738,18 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 			    return associateType(ctx, newType);
 			  }
 			}
-			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx, currentScope));
+
+      Symbol t = null;
+      if (ctx.unaryExpr() != null) {
+        t = currentScope.resolve(ctx.unaryExpr().getText());
+      } else {
+        t = null;
+      }
+			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx, t)); //ctx.unaryExpr().getText());
 		}
 		return associateType(ctx,visit(ctx.primaryExpr()));
 	}
+  // currentScope.resolve(opnd.getName())
 
 	// relOp:     '==' | '!=' | '<' | '<=' | '>' | '>=' ;
 	// addOp:     '+' | '-' | '|' | '^' ;
@@ -796,7 +804,14 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	@Override
 	public Type visitIncDecStmt(GooParser.IncDecStmtContext ctx) {
 		Type opnd = visit(ctx.expression());
-		return TypeChecking.checkUnaryOp(opnd, "++", ctx, currentScope);	// check for being an L-value left for pass 3
+
+    Symbol t;
+    if (ctx.expressionContext() != null) {
+      t = currentScope.resolve(ctx.expressionContext().getText());
+    } else {
+      t = null;
+    }
+		return TypeChecking.checkUnaryOp(opnd, "++", ctx, t);	// check for being an L-value left for pass 3
 	}
 
 	@Override
