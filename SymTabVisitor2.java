@@ -806,8 +806,8 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 		Type opnd = visit(ctx.expression());
 
     Symbol t;
-    if (ctx.expressionContext() != null) {
-      t = currentScope.resolve(ctx.expressionContext().getText());
+    if (ctx.expression() != null) {
+      t = currentScope.resolve(ctx.expression().getText());
     } else {
       t = null;
     }
