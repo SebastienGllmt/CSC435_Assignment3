@@ -237,7 +237,7 @@ public class SymTabVisitor1 extends GooBaseVisitor<Type> {
 		        currentScope.define(sy);
 		    }
 		}
-        return saveType(ctx,typ);
+    return saveType(ctx,typ);
 	}
 
     @Override

@@ -738,7 +738,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 			    return associateType(ctx, newType);
 			  }
 			}
-			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx));
+			return associateType(ctx,TypeChecking.checkUnaryOp(opnd, ctx.unaryOp().getText(), ctx, currentScope));
 		}
 		return associateType(ctx,visit(ctx.primaryExpr()));
 	}
@@ -796,7 +796,7 @@ public class SymTabVisitor2 extends GooBaseVisitor<Type> {
 	@Override
 	public Type visitIncDecStmt(GooParser.IncDecStmtContext ctx) {
 		Type opnd = visit(ctx.expression());
-		return TypeChecking.checkUnaryOp(opnd, "++", ctx);	// check for being an L-value left for pass 3
+		return TypeChecking.checkUnaryOp(opnd, "++", ctx, currentScope);	// check for being an L-value left for pass 3
 	}
 
 	@Override

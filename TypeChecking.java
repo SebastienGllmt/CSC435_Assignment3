@@ -401,7 +401,7 @@ public class TypeChecking {
 
  	// Report an error if the operator is not applicable to the operand type;
  	// return the type of the result
-    public static Type checkUnaryOp(Type opnd, String op, ParserRuleContext ctx) {
+    public static Type checkUnaryOp(Type opnd, String op, ParserRuleContext ctx, Scope currentScope) {
     	// very much code is missing here!
     	// unaryOp:   '+' | '-' | '!' | '^' | '*' | '&' ;
 
@@ -430,7 +430,14 @@ public class TypeChecking {
           }
 
         case("&") :
-          return Type.newPointerType(opnd);
+          Symbol s = currentScope.resolve(opnd.name);
+          if (s != null) {
+            return Type.newPointerType(opnd);
+          } else {
+            ReportError.error(ctx, "Can only reference variables.");
+            return Type.unknownType;
+          }
+
 
         default:
           ReportError.error(ctx, "Unknown operator " + op);

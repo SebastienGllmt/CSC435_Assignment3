@@ -1,15 +1,10 @@
 package main
+const foo int = 4
 
 func main() {
-
-  type Days int32
-  type Kilograms int32
-
-  var v1 Days
-  var v2 Kilograms
-  var x = v1;
-
-  v1 = v2 // type mismatch error
-  v1 = 3 // OK
-  v2 = 3 // OK
+  z := 5
+  y := 6
+  x := &y
+  v := &6
+  w := -5
 }
