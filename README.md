@@ -6,6 +6,5 @@ The project uses Antlr4
 
 To use:
 % antlr4 -visitor -no-listener Goo.g4
-% javac -g -d bin *.java
-% cd bin
+% javac *.java
 % java GooMain -dsym <GoProgram>.go
